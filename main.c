@@ -20,6 +20,29 @@ typedef struct{
 	float mass;
 }Player;
 
+void kinematics(Player *player,float dt){
+
+		player->velocity.x+=player->acc.x*dt;
+		player->velocity.y+=player->acc.y*dt;
+
+}
+
+bool collisioncheck(Player *player){
+	if(player->position.y+PHEIGHT>=500){
+			return true;
+		}else{
+			return false;
+		}
+}
+
+void groundcheck(Player *player,bool grounded){
+		if(grounded){
+			player->velocity.y=0;
+		}else{
+			player->acc.y=GRAVITY;
+		}
+}
+
 int main(void){
 
 	InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Game");
@@ -34,39 +57,32 @@ int main(void){
 	};
 
 	Color playercol=RED;
-
+	bool grounded=true;
+	
 	Rectangle floor={0,500,SCREEN_WIDTH,SCREEN_HEIGHT-500};				
 
 	while (!WindowShouldClose()){
 
 		float dt = GetFrameTime();
 
-		p1.velocity.x+=p1.acc.x*dt;
-		p1.velocity.y+=p1.acc.y*dt;
+		kinematics(&p1,dt);
 
-		p1.position.x+=p1.velocity.x*dt;
-		p1.position.y+=p1.velocity.y*dt;
+		grounded=collisioncheck(&p1);
 
-		Rectangle prect={p1.position.x,p1.position.y,PWIDTH,PHEIGHT};
+		groundcheck(&p1, grounded);
 
-		if(p1.position.y+PHEIGHT>=500){
-			printf("grounded\n");
-			fflush(stdout);
-			
-			p1.acc.y=0;
-			p1.velocity.y=0;
-		}else{
-			p1.acc.y=GRAVITY;
-		}
-		 
 		if (IsKeyDown(KEY_D)){
 			p1.velocity.x=PLAYER_SPEED;
 		}else if (IsKeyDown(KEY_A)){
 			p1.velocity.x=-PLAYER_SPEED;
-		}else if (IsKeyPressed(KEY_SPACE)){
+		}else if (IsKeyPressed(KEY_SPACE) && grounded){
 			p1.velocity.y=-JUMP_VELOCITY;
 		}
+		
+		p1.position.x+=p1.velocity.x*dt;
+		p1.position.y+=p1.velocity.y*dt;
 
+		Rectangle prect={p1.position.x,p1.position.y,PWIDTH,PHEIGHT};
 
 		BeginDrawing();
 
@@ -80,8 +96,6 @@ int main(void){
 
 		EndDrawing();
 	}
-
-	//game close
 
 	CloseWindow();
 
