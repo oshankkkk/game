@@ -3,13 +3,14 @@
 - accleration
 - gravity
 - collision detection with sprites
-
 - normal force
 - friction 
 - drag
-- slops 
+
+- make sims and collisions ground 
+- add sprints
 - Terraln generation
-- simulations
 - find something before the timer ends, rouge like
+- day and night
 
-
+> A small game with a lot of juice 

@@ -26,10 +26,8 @@ typedef struct{
 }Floor;
 
 void kinematics(Player *player,float dt){
-
 		player->velocity.x+=player->acc.x*dt;
 		player->velocity.y+=player->acc.y*dt;
-
 }
 
 bool collisioncheck(Player *player){
@@ -69,14 +67,14 @@ int main(void){
 	Color playercol=RED;
 	bool grounded=true;
 		
-
 	Rectangle floorrect={floor.position.x,floor.position.y,10000,SCREEN_HEIGHT-500};				
 
 	Camera2D cam={0};
 	cam.offset=(Vector2){SCREEN_WIDTH/2.0f,SCREEN_HEIGHT/2.0f};
 
 	// player appears at screen center
-	cam.target=(Vector2){p1.position.x+PWIDTH/3,p1.position.y+PHEIGHT/3};
+	cam.target=(Vector2){p1.position.x+PWIDTH/2,p1.position.y+PHEIGHT/2};
+
 	cam.rotation=0.0f;
 	cam.zoom=1.0f;
 
@@ -111,7 +109,6 @@ int main(void){
 
 		float t=1.0f-expf(-8.0f*dt);    
 		cam.target.x+=(goal.x-cam.target.x)*t;
-		cam.target.y+=(goal.y-cam.target.y)*t;
 
 		Rectangle prect={p1.position.x,p1.position.y,PWIDTH,PHEIGHT};
 
@@ -126,7 +123,6 @@ int main(void){
 
 		EndMode2D();                            
 
-
 		DrawText(TextFormat(" y velocity: %f",p1.velocity.y), 500, 10, 20,WHITE);
 		DrawText(TextFormat("y acc: %f",p1.acc.y), 500, 45, 20,BLUE);
 
@@ -137,5 +133,4 @@ int main(void){
 
 	return 0;
 }
-
 
