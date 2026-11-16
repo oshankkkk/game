@@ -8,4 +8,5 @@ find_package(raylib REQUIRED)
 
 add_executable(game main.c)
 
-target_link_libraries(game raylib)
+target_link_libraries(game raylib m)
+
