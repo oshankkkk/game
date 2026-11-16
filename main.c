@@ -1,5 +1,4 @@
 #include "raylib.h"
-#include <stdio.h>
 
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 800
@@ -71,11 +70,16 @@ int main(void){
 
 		groundcheck(&p1, grounded);
 
-		if (IsKeyDown(KEY_D)){
-			p1.velocity.x=PLAYER_SPEED;
-		}else if (IsKeyDown(KEY_A)){
+		if (IsKeyDown(KEY_A)){
 			p1.velocity.x=-PLAYER_SPEED;
-		}else if (IsKeyPressed(KEY_SPACE) && grounded){
+		}else if (IsKeyReleased(KEY_A)){
+			p1.velocity.x=0;
+		}else if (IsKeyDown(KEY_D)){
+			p1.velocity.x=PLAYER_SPEED;
+		}else if (IsKeyReleased(KEY_D)){
+			p1.velocity.x=0;
+		} 
+		if (IsKeyPressed(KEY_SPACE) && grounded){
 			p1.velocity.y=-JUMP_VELOCITY;
 		}
 		
