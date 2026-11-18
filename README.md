@@ -1,5 +1,6 @@
+### Todos
 - make sims and collisions ground 
-- add sprints
+- add sprites
 - Terraln generation
 - find something before the timer ends, rouge like
 - day and night

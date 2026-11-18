@@ -8,6 +8,7 @@
 #define GRIDROW SCREENW/CELLSIZE
 #define GRIDCOL SCREENH/CELLSIZE
 
+
 int main(void){
 
     InitWindow(SCREENW, SCREENH, "sand sim");
@@ -40,16 +41,23 @@ int main(void){
 		}
 	}
 
-	grid[0][0]=1;
+	Vector2 mouspoistion;
 
 	while (!WindowShouldClose()){
+
+		mouspoistion=GetMousePosition();
+
+		int r=	mouspoistion.x/CELLSIZE;
+		int c=mouspoistion.y/CELLSIZE;
+
+		grid[r][c]=1;
 
 		for (int i = 0; i < GRIDROW; i++){
 			memset(grid2[i], 0, GRIDCOL);
 		}
 
 		for (int i=0;i<GRIDROW;i++){
-			for (int j=0;j<GRIDCOL;j++){
+			for (int j = GRIDCOL - 1; j >= 0; j--){
 				if(grid[i][j]==1){
 					if (j + 1 < GRIDCOL && grid2[i][j+1] == 0) {
 						grid2[i][j+1] = 1;   
@@ -57,9 +65,7 @@ int main(void){
 						grid2[i][j] = 1;
 					}	
 				}
-
 			}
-
 		}
 
 		char **temp	=grid;
@@ -69,21 +75,20 @@ int main(void){
 		BeginDrawing();
 
 		ClearBackground(BLACK);
+
 		for (int i=0;i<GRIDROW;i++){
 			for (int j=0;j<GRIDCOL;j++){
 				if(grid[i][j]==1){
 					DrawRectangle(i*CELLSIZE,j*CELLSIZE,CELLSIZE,CELLSIZE,RED);
 				}
-				DrawRectangleLines(i*CELLSIZE,j*CELLSIZE,CELLSIZE,CELLSIZE,WHITE);
-
-				}
-
 			}
+		}
 
-        EndDrawing();
-    }
+		EndDrawing();
+	}
 
-    CloseWindow();        
+	CloseWindow();        
 
-    return 0;
+	return 0;
 }
+
