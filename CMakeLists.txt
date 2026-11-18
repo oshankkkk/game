@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 23)
 
 find_package(raylib REQUIRED)
 
-add_executable(game main.c)
+add_executable(game sand.c)
 
 target_link_libraries(game raylib m)
 
