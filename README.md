@@ -16,4 +16,9 @@
 - friction 
 - drag
 
+- sand
+- fire 
+- water
+- air 
+- gas
 

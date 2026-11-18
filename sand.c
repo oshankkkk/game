@@ -11,9 +11,9 @@
 
 int main(void){
 
-    InitWindow(SCREENW, SCREENH, "sand sim");
+	InitWindow(SCREENW, SCREENH, "sand sim");
 
-    SetTargetFPS(60);               
+	SetTargetFPS(60);               
 
 	char **grid=calloc(GRIDROW, sizeof(int *));
 
@@ -47,24 +47,43 @@ int main(void){
 
 		mouspoistion=GetMousePosition();
 
-		int r=	mouspoistion.x/CELLSIZE;
-		int c=mouspoistion.y/CELLSIZE;
+		if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+			int r = mouspoistion.x / CELLSIZE;
+			int c = mouspoistion.y / CELLSIZE;
 
-		grid[r][c]=1;
+			if (r >= 0 && r < GRIDROW && c >= 0 && c < GRIDCOL) {
+				grid[r][c] = 1;
+			}
+		}
 
 		for (int i = 0; i < GRIDROW; i++){
 			memset(grid2[i], 0, GRIDCOL);
 		}
 
+
 		for (int i=0;i<GRIDROW;i++){
 			for (int j = GRIDCOL - 1; j >= 0; j--){
+				if (grid[i][j] != 1) continue;
+				if(j + 1 >= GRIDCOL){
+					grid2[i][j] = 1;
+					continue;
+				}	
+
+				int dir =GetRandomValue(0,1)?1:-1;
+				int a=i+dir;
+				int b=i-dir;
+
 				if(grid[i][j]==1){
-					if (j + 1 < GRIDCOL && grid2[i][j+1] == 0) {
+					if (grid2[i][j+1] == 0){
 						grid2[i][j+1] = 1;   
-					} else {
+					}else if(a>=0 && a < GRIDROW && grid[a][j+1] == 0){
+						grid2[a][j+1] = 1;
+					}else if(b>=0 && b < GRIDROW && grid[b][j+1] == 0){
+						grid2[b][j+1] = 1;
+					}else {
 						grid2[i][j] = 1;
 					}	
-				}
+				}	
 			}
 		}
 
@@ -80,6 +99,7 @@ int main(void){
 			for (int j=0;j<GRIDCOL;j++){
 				if(grid[i][j]==1){
 					DrawRectangle(i*CELLSIZE,j*CELLSIZE,CELLSIZE,CELLSIZE,RED);
+
 				}
 			}
 		}
