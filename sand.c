@@ -7,7 +7,15 @@
 #define SCREENH 850
 #define GRIDROW SCREENW/CELLSIZE
 #define GRIDCOL SCREENH/CELLSIZE
+#define GRAVITY .25f
 
+typedef struct{
+	Vector2 velocity;
+	Vector2 acc;
+	int mass;
+	int filled;
+	float accum;
+}Grain ;
 
 int main(void){
 
@@ -15,28 +23,15 @@ int main(void){
 
 	SetTargetFPS(60);               
 
-	char **grid=calloc(GRIDROW, sizeof(int *));
+	Grain **grid=calloc(GRIDROW, sizeof(*grid));
 
 	for (int i=0;i<GRIDROW;i++){
-		grid[i]=calloc(GRIDCOL,sizeof(int));
+		grid[i]=calloc(GRIDCOL,sizeof(**grid));
 		if (grid[i] == NULL) {
 			for (int j = 0; j < i; j++) {
 				free(grid[j]);
 			}
 			free(grid);
-			return 1;
-		}
-	}
-
-	char **grid2=calloc(GRIDROW, sizeof(int *));
-
-	for (int i=0;i<GRIDROW;i++){
-		grid2[i]=calloc(GRIDCOL,sizeof(int));
-		if (grid2[i] == NULL) {
-			for (int j = 0; j < i; j++) {
-				free(grid2[j]);
-			}
-			free(grid2);
 			return 1;
 		}
 	}
@@ -51,45 +46,57 @@ int main(void){
 			int r = mouspoistion.x / CELLSIZE;
 			int c = mouspoistion.y / CELLSIZE;
 
-			if (r >= 0 && r < GRIDROW && c >= 0 && c < GRIDCOL) {
-				grid[r][c] = 1;
+			if (r >= 0 && r < GRIDROW && c >= 0 && c < GRIDCOL && !grid[r][c].filled ) {
+				grid[r][c] = (Grain){.velocity={0,0},.acc={0,GRAVITY},.filled=1,.mass=10,.accum=0};
 			}
 		}
+	
+		for (int j = GRIDCOL - 1; j >= 0; j--){
+			for (int i = 0; i < GRIDROW; i++){
 
-		for (int i = 0; i < GRIDROW; i++){
-			memset(grid2[i], 0, GRIDCOL);
-		}
+				if (!grid[i][j].filled) continue;
 
+				Grain g = grid[i][j];
 
-		for (int i=0;i<GRIDROW;i++){
-			for (int j = GRIDCOL - 1; j >= 0; j--){
-				if (grid[i][j] != 1) continue;
-				if(j + 1 >= GRIDCOL){
-					grid2[i][j] = 1;
-					continue;
-				}	
+				g.velocity.y += g.acc.y;
 
-				int dir =GetRandomValue(0,1)?1:-1;
-				int a=i+dir;
-				int b=i-dir;
+				g.accum += g.velocity.y;
+				int steps = (int)g.accum;
+				g.accum -= steps;
 
-				if(grid[i][j]==1){
-					if (grid2[i][j+1] == 0){
-						grid2[i][j+1] = 1;   
-					}else if(a>=0 && a < GRIDROW && grid[a][j+1] == 0){
-						grid2[a][j+1] = 1;
-					}else if(b>=0 && b < GRIDROW && grid[b][j+1] == 0){
-						grid2[b][j+1] = 1;
-					}else {
-						grid2[i][j] = 1;
-					}	
-				}	
+				int x = i, y = j;
+
+				while (steps > 0){
+
+					steps--;
+
+					if (y + 1 >= GRIDCOL) { 
+						g.velocity.y = 0; 
+						g.accum = 0;
+						break; 
+					}
+
+					int dir = GetRandomValue(0, 1) ? 1 : -1;
+
+					if (!grid[x][y+1].filled) {
+						y++;
+					} else if (x+dir >= 0 && x+dir < GRIDROW && !grid[x+dir][y+1].filled) {
+						x += dir; y++;
+					} else if (x-dir >= 0 && x-dir < GRIDROW && !grid[x-dir][y+1].filled) {
+						x -= dir; y++;
+					} else {
+						g.velocity.y = 0; 
+						g.accum = 0;
+						break;
+					}
+				}
+
+				if (y == GRIDCOL - 1) { g.velocity.y = 0; g.accum = 0; }
+				grid[i][j] = (Grain){0};  
+				grid[x][y] = g;  
+
 			}
 		}
-
-		char **temp	=grid;
-		grid=grid2;
-		grid2 = temp;
 
 		BeginDrawing();
 
@@ -97,9 +104,8 @@ int main(void){
 
 		for (int i=0;i<GRIDROW;i++){
 			for (int j=0;j<GRIDCOL;j++){
-				if(grid[i][j]==1){
+				if(grid[i][j].filled==1){
 					DrawRectangle(i*CELLSIZE,j*CELLSIZE,CELLSIZE,CELLSIZE,RED);
-
 				}
 			}
 		}
